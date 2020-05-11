@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper:根标签，namespace：命名空间，这里指的是你封装的DAO -->
+<mapper namespace="com.mobile_service.dao.PackageDao">
+    <!-- statement，内容：sql语句。id：唯一标识，随便写，在同一个命名空间下保持唯一
+       resultType：sql语句查询结果集的封装类型,tb_user即为数据库中的表
+     -->
+    <resultMap id="packageInfo1" type="PackageInfo">
+        <result column="packageName" property="packageName"/>
+        <result column="phoneCall" property="call"/>
+        <result column="data" property="data"/>
+        <result column="message" property="text"/>
+        <result column="fee" property="fee"/>
+    </resultMap>
+    <resultMap id="packageInfo2" type="PackageInfo">
+        <result column="packageName" property="packageName"/>
+        <result column="phoneCall" property="out_call"/>
+        <result column="data" property="out_data"/>
+        <result column="message" property="out_message"/>
+        <result column="fee" property="fee"/>
+    </resultMap>
+
+    <!--<insert id="CreatePackageInformation" parameterType="PackageInfo">
+        insert into packageInfo(packageName, phoneCall, data, message, fee)
+                    values(#{packageName}, #{pack_call}, #{pack_data}, #{pack_message}, #{pack_fee})
+    </insert>
+
+    <insert id="CreateOutPackageInformation" parameterType="PackageInfo">
+        insert into packageInfo(packageName, phoneCall, data, message, fee)
+                    values(#{packageName}, #{out_call}, #{out_data}, #{out_message}, 0)
+    </insert>-->
+
+    <select id="UpdatePackageInformation" resultMap="packageInfo1" parameterType="String">
+        select * from packageInfo where packageName = #{packageName}
+    </select>
+
+    <select id="UpdateOutPackageInformation" resultMap="packageInfo2" parameterType="String">
+        select * from packageInfo where packageName = #{packageName}
+    </select>
+</mapper>

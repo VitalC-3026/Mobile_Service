@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper:根标签，namespace：命名空间，这里指的是你封装的DAO -->
+<mapper namespace="com.mobile_service.dao.UserDao">
+    <!-- statement，内容：sql语句。id：唯一标识，随便写，在同一个命名空间下保持唯一
+       resultType：sql语句查询结果集的封装类型,tb_user即为数据库中的表
+     -->
+    <resultMap id="userInfo" type="User">
+        <result column="Telephone" property="Telephone"/>
+        <result column="UserName" property="UserName"/>
+        <result column="password" property="password"/>
+        <result column="packageName" property="packageName"/>
+        <result column="Balance" property="Balance"/>
+    </resultMap>
+
+    <resultMap id="packageUse1" type="TalkingTooMuch">
+        <result column="Telephone" property="Telephone"/>
+        <result column="packageName" property="PackageName"/>
+        <result column="phoneCall" property="phone_call"/>
+        <result column="OutPhoneCall" property="extra_call"/>
+        <result column="packCall" property="pack_call"/>
+        <result column="data" property="data"/>
+        <result column="OutData" property="extra_data"/>
+        <result column="packData" property="pack_data"/>
+        <result column="message" property="message"/>
+        <result column="OutMessage" property="extra_message"/>
+        <result column="packMessage" property="pack_message"/>
+        <result column="fee" property="fee"/>
+        <result column="OutFee" property="extra_fee"/>
+    </resultMap>
+    <resultMap id="packageUse2" type="NetWorm">
+        <result column="Telephone" property="Telephone"/>
+        <result column="packageName" property="PackageName"/>
+        <result column="phoneCall" property="phone_call"/>
+        <result column="OutPhoneCall" property="extra_call"/>
+        <result column="packCall" property="pack_call"/>
+        <result column="data" property="data"/>
+        <result column="OutData" property="extra_data"/>
+        <result column="packData" property="pack_data"/>
+        <result column="message" property="message"/>
+        <result column="OutMessage" property="extra_message"/>
+        <result column="packMessage" property="pack_message"/>
+        <result column="fee" property="fee"/>
+        <result column="OutFee" property="extra_fee"/>
+    </resultMap>
+    <resultMap id="packageUse3" type="Superman">
+        <result column="Telephone" property="Telephone"/>
+        <result column="packageName" property="PackageName"/>
+        <result column="phoneCall" property="phone_call"/>
+        <result column="OutPhoneCall" property="extra_call"/>
+        <result column="packCall" property="pack_call"/>
+        <result column="data" property="data"/>
+        <result column="OutData" property="extra_data"/>
+        <result column="packData" property="pack_data"/>
+        <result column="message" property="message"/>
+        <result column="OutMessage" property="extra_message"/>
+        <result column="packMessage" property="pack_message"/>
+        <result column="fee" property="fee"/>
+        <result column="OutFee" property="extra_fee"/>
+    </resultMap>
+
+    <resultMap id="DepositRecord" type="Deposit">
+        <result column="Telephone" property="Telephone" jdbcType="VARCHAR" javaType="String"/>
+        <result column="Money" property="Money"/>
+        <result column="DepositTime" property="DepositTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="ConsumptionRecord" type="Consumption">
+        <result column="Telephone" property="Telephone"/>
+        <result column="Mode" property="Mode"/>
+        <result column="Flow" property="Flow"/>
+        <result column="ConsumeTime" property="save_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+
+    <!--sql语句的实现-->
+    <!--对userInfo表格的操作-->
+    <insert id="createUser" parameterType="User">
+        insert into userinfo(Telephone, userName, password, packageName, Balance)
+        values(#{Telephone}, #{UserName}, #{password}, #{packageName}, #{Balance})
+    </insert>
+    <delete id="deleteUser" parameterType="String">
+        delete from userInfo where Telephone = #{Telephone}
+    </delete>
+    <select id="getUser" resultMap="userInfo" parameterType="String">
+        select * from userInfo where Telephone = #{Telephone}
+    </select>
+
+    <select id="getUserPackageName" resultType="String" parameterType="String">
+        select packageName from userInfo where Telephone = #{Telephone}
+   </select>
+
+    <update id="changePackageName" parameterType="String">
+        update userInfo set packageName = #{PackageName} where Telephone = #{Telephone}
+    </update>
+
+    <select id="getPassword" parameterType="String" resultType="String">
+        select password from UserInfo where Telephone = #{Telephone}
+    </select>
+    <update id="resetPassword" parameterType="Map">
+        update userInfo set password = #{password} where Telephone = #{Telephone}
+    </update>
+
+    <select id="getBalance" parameterType="String" resultType="double">
+        select Balance from userInfo where Telephone = #{Telephone}
+    </select>
+
+    <!--对packageUse的操作-->
+    <insert id="createPackageUsage" parameterType="MonthlyPackage">
+        insert into packageUse(Telephone, PackageName, phoneCall, OutPhoneCall, data, OutData, message, OutMessage, fee, OutFee, packCall, packData, packMessage)
+        values(#{Telephone}, #{PackageName}, #{phone_call}, #{extra_call}, #{data}, #{extra_data}, #{message}, #{extra_message}, #{fee}, #{extra_fee}, #{pack_call}, #{pack_data}, #{pack_message})
+    </insert>
+
+    <select id="getPackageUsage1" resultMap="packageUse1" parameterType="String">
+        select * from packageUse where Telephone = #{Telephone}
+    </select>
+    <select id="getPackageUsage2" resultMap="packageUse2" parameterType="String">
+        select * from packageUse where Telephone = #{Telephone}
+    </select>
+    <select id="getPackageUsage3" resultMap="packageUse3" parameterType="String">
+        select * from packageUse where Telephone = #{Telephone}
+    </select>
+
+    <update id="changePackage" parameterType="MonthlyPackage">
+        update packageUse set packageName = #{PackageName}, phoneCall = #{phone_call}, OutPhoneCall = #{extra_call}, data = #{data},
+        OutData = #{extra_data}, message = #{message}, OutMessage = #{extra_message}, fee = #{fee}, OutFee = #{extra_fee}, packCall = #{pack_call},
+        packData = #{pack_data}, packMessage = #{pack_message} where Telephone = #{Telephone}
+    </update>
+
+    <update id="updatePackageUsage" parameterType="MonthlyPackage">
+        update packageUse set phoneCall = #{phone_call}, OutPhoneCall = #{extra_call}, data = #{data}, OutData = #{extra_data},
+        message = #{message}, OutMessage = #{extra_message}, fee = #{fee}, OutFee = #{extra_fee} where Telephone = #{Telephone}
+    </update>
+
+
+    <!--对consumption和deposit两个表格的操作-->
+    <insert id="addConsumptionRecord" parameterType="Consumption">
+        insert into ConsumptionRecord(Telephone, Mode, Flow) values(#{Telephone},#{Mode},#{Flow})
+    </insert>
+    <insert id="addDepositRecord" parameterType="Deposit">
+        insert into DepositRecord(Telephone, Money) values(#{Telephone}, #{Money})
+    </insert>
+    <select id="getDepositRecord" resultMap="DepositRecord" parameterType="String">
+        select Telephone as "Telephone", Money as "Money", DepositTime as "DepositTime" from DepositRecord where Telephone = #{Telephone}
+    </select>
+    <select id="getConsumptionRecord" resultMap="ConsumptionRecord" parameterType="String">
+        select * from ConsumptionRecord where Telephone = #{Telephone}
+    </select>
+
+    <!--额外的服务-->
+    <update id="addDataPack" parameterType="Map">
+        update packageUse set packData = packData + #{data} where Telephone = #{Telephone}
+    </update>
+
+    <update id="addLifeService" parameterType="Map">
+        update userInfo set lifeService = CONCAT(lifeService, ',', #{service}) where Telephone = #{Telephone}
+    </update>
+
+    <update id="deposit" parameterType="Map">
+        update userInfo set Balance = balance + #{money} where Telephone = #{Telephone}
+    </update>
+
+    <update id="consume" parameterType="Map">
+        update userInfo set Balance = balance - #{money} where Telephone = #{Telephone}
+    </update>
+</mapper>

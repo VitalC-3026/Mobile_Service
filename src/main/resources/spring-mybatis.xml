@@ -1,0 +1,146 @@
+<?xml version= "1.0" encoding= "UTF-8"?>
+<beans xmlns= "http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context= "http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation=" http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-3.1.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+    <!-- 自动扫描 扫描代码中的注释 -->
+    <context:component-scan base-package="com.mobile_service" use-default-filters="false">
+    </context:component-scan>
+
+    <!-- 引入配置文件 -->
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PlaceholderConfigurerSupport" abstract="true">
+        <property name="location" value ="classpath:/jdbc.properties" />
+    </bean>
+
+    <context:property-placeholder location="classpath:/jdbc.properties"/>
+    <bean id="dataSource" class= "org.apache.commons.dbcp2.BasicDataSource"
+          destroy-method="close">
+        <property name= "driverClassName" value="${jdbc.driver}" />
+        <property name= "url" value="${jdbc.url}" />
+        <property name= "username" value="${jdbc.user}" />
+        <property name= "password" value="${jdbc.password}" />
+        <!-- 初始化连接大小 -->
+        <property name="initialSize" value="${jdbc.initialSize}"/>
+        <!-- 连接池最大数量 -->
+        <property name="maxTotal" value="${jdbc.maxActive}"/>
+        <!-- 连接池最大空闲 -->
+        <property name="maxIdle" value="${jdbc.maxIdle}"/>
+        <!-- 连接池最小空闲 -->
+        <property name="minIdle" value="${jdbc.minIdle}"/>
+        <!-- 获取连接最大等待时间 -->
+        <property name="maxWaitMillis" value="${jdbc.maxWait}"/>
+    </bean>
+
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"
+    p:typeAliasesPackage="com.mobile_service.entity">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 自动扫描mapping.xml文件 -->
+        <property name="mapperLocations" value="classpath:mapper/mobile_service/dao/*.xml"/>
+    </bean>
+
+    <!-- 配置SqlSessionTemplate -->
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" scope="prototype">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+    </bean>
+
+    <!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+    <bean class= "org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name= "basePackage" value="com.mobile_service.dao" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+    <!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name= "dataSource" ref="dataSource" />
+    </bean>
+
+
+
+    <tx:annotation-driven/>
+    <tx:advice id="txAdvice">
+        <tx:attributes>
+            <tx:method name="select*" propagation="SUPPORTS"/>
+            <tx:method name="insert*" propagation="REQUIRED"/>
+            <tx:method name="update*" propagation="REQUIRED"/>
+            <tx:method name="delete*" propagation="REQUIRED"/>
+            <tx:method name="*" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+
+
+    <!--配置业务 -->
+    <bean id="userServiceImpl" class="com.mobile_service.serviceImpl.UserServiceImpl">
+        <constructor-arg ref="sqlSessionTemplate"/>
+        <property name="sqlSession" ref="sqlSessionTemplate"/>
+    </bean>
+    <bean id="userService" class="com.mobile_service.service.UserService">
+        <constructor-arg ref="sqlSessionTemplate"/>
+        <property name="UserServiceImpl" ref="userServiceImpl"/>
+    </bean>
+    <bean id="packageServiceImpl" class="com.mobile_service.serviceImpl.PackageServiceImpl">
+        <constructor-arg ref="sqlSessionTemplate"/>
+        <property name="sqlSession" ref="sqlSessionTemplate"/>
+    </bean>
+    <bean id="packageService" class="com.mobile_service.service.PackageService">
+        <constructor-arg ref="sqlSessionTemplate"/>
+        <property name="PackageServiceImpl" ref="packageServiceImpl"/>
+    </bean>
+
+    <bean id="userSetting" class="com.mobile_service.service.UserScene">
+        <property name="scene">
+            <list>
+                <value>问候客户，谁知其如此难缠 通话90分钟</value>
+                <value>通知朋友手机换号 发送短信100条</value>
+                <value>参与环境保护实施方案问卷调查 发送短信5条</value>
+                <value>看4k高清粤语版国庆阅兵 上网用流量5G</value>
+                <value>发微博控诉作业很多的Java课程，被网友教育要好好学习 上网用流量1G</value>
+                <value>和父母聊天 通话40分钟</value>
+            </list>
+        </property>
+        <property name="mode">
+            <list>
+                <value>通话</value>
+                <value>短信</value>
+                <value>短信</value>
+                <value>流量</value>
+                <value>流量</value>
+                <value>通话</value>
+            </list>
+        </property>
+        <property name="flow">
+            <list>
+                <value>90</value>
+                <value>100</value>
+                <value>5</value>
+                <value>5120</value>
+                <value>1024</value>
+                <value>40</value>
+            </list>
+        </property>
+
+    </bean>
+
+    <bean id="outPackage" class="com.mobile_service.entity.PackageInfo">
+        <property name="out_call"><value>0.2</value></property>
+        <property name="out_data"><value>0.1</value></property>
+        <property name="out_message"><value>0.1</value></property>
+    </bean>
+
+    <aop:config proxy-target-class="true"/>
+</beans>
